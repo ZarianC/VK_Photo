@@ -38,6 +38,7 @@ def download_photo(id, count):
                              'album_id': 'profile',
                              'photo_sizes': True,
                              'count': count,
+                             'rev': 0,
                              'access_token': token})
     write_json(r.json())
 
@@ -66,3 +67,4 @@ if operation_mode == '1':
         for id_user in id_users:
             os.mkdir('photo/' + id_user.rstrip())
             download_photo(id_user, count_photo)
+            print('Скачали фото у пользователя с id ' + id_user)
