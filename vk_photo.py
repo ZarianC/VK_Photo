@@ -31,11 +31,12 @@ def save_photo(url):
 
 
 # Получаем фото пользователя с максимальным расширением
-def download_photo(id_user):
+def download_photo(id_user, count):
     r = requests.get('https://api.vk.com/method/photos.get',
                      params={'owner_id': id_user,
                              'album_id': 'profile',
                              'photo_sizes': True,
+                             'count': count,
                              'access_token': token})
     write_json(r.json())
 
@@ -47,5 +48,12 @@ def download_photo(id_user):
         max_sizes_url = max(sizes, key=get_largest)['src']
         save_photo(max_sizes_url)
 
+print("Выберите режим работы:")
+print("1. Скачивание фотографии по id пользователя")
+print("2. Уникализация фото из указанной папки")
 
-download_photo(169106238)
+operation_mode = input('Ваш выбор - ')
+
+if operation_mode == '1':
+    count_photo = input('Сколько фото скачивать? - ')
+    download_photo('169106238б', count_photo)
