@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 token = '316109efc4cbdeb2997daf111c8fe14d520fc1763473c258a4e58c05959c9f21b6f35e26c3d662d4907a1'
 
@@ -19,10 +20,10 @@ def get_largest(size_dict):
 
 
 # Сохраняем фото на жесткий диск
-def save_photo(url):
+def save_photo(url, folder_name):
     r = requests.get(url, stream=True)
 
-    filename = '1/' + url.split('/')[-1]
+    filename = 'photo/' + folder_name.rstrip() + '/' + url.split('/')[-1]
 
     with open(filename, 'bw') as file:
 
@@ -31,9 +32,9 @@ def save_photo(url):
 
 
 # Получаем фото пользователя с максимальным расширением
-def download_photo(id_user, count):
+def download_photo(id, count):
     r = requests.get('https://api.vk.com/method/photos.get',
-                     params={'owner_id': id_user,
+                     params={'owner_id': id,
                              'album_id': 'profile',
                              'photo_sizes': True,
                              'count': count,
@@ -46,14 +47,22 @@ def download_photo(id_user, count):
         sizes = photo['sizes']
 
         max_sizes_url = max(sizes, key=get_largest)['src']
-        save_photo(max_sizes_url)
+        save_photo(max_sizes_url, id)
+
+
+# Основной блок работы скрипта
 
 print("Выберите режим работы:")
-print("1. Скачивание фотографии по id пользователя")
+print("1. Скачивание фотографии по id пользователей")
 print("2. Уникализация фото из указанной папки")
 
 operation_mode = input('Ваш выбор - ')
 
 if operation_mode == '1':
-    count_photo = input('Сколько фото скачивать? - ')
-    download_photo('169106238б', count_photo)
+    count_photo = input('Сколько фото скачивать у каждого id? - ')
+
+    with open('id_user.txt') as file_object:
+        id_users = file_object.readlines()
+        for id_user in id_users:
+            os.mkdir('photo/' + id_user.rstrip())
+            download_photo(id_user, count_photo)
