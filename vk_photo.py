@@ -2,8 +2,10 @@ import requests
 import json
 import os
 
-token = '316109efc4cbdeb2997daf111c8fe14d520fc1763473c258a4e58c05959c9f21b6f35e26c3d662d4907a1'
+# token = '316109efc4cbdeb2997daf111c8fe14d520fc1763473c258a4e58c05959c9f21b6f35e26c3d662d4907a1'
 
+with open('data/token.txt') as token_object:
+    token = token_object.readline()
 
 # Сохраняем ответ сервера ВК в файл photos_json
 def write_json (data):
@@ -62,7 +64,7 @@ operation_mode = input('Ваш выбор - ')
 if operation_mode == '1':
     count_photo = input('Сколько фото скачивать у каждого id? - ')
 
-    with open('id_user.txt') as file_object:
+    with open('data/id_user.txt') as file_object:
         id_users = file_object.readlines()
         for id_user in id_users:
             os.mkdir('photo/' + id_user.rstrip())
