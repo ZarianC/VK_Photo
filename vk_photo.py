@@ -67,6 +67,10 @@ if operation_mode == '1':
     with open('data/id_user.txt') as file_object:
         id_users = file_object.readlines()
         for id_user in id_users:
-            os.mkdir('photo/' + id_user.rstrip())
-            download_photo(id_user, count_photo)
-            print('Скачали фото у пользователя с id ' + id_user)
+            if os.path.exists('photo/' + id_user.rstrip()):
+                print('Фото пользователя с id ' + id_user.rstrip() + ' уже скачаны')
+                continue
+            else:
+                os.mkdir('photo/' + id_user.rstrip())
+                download_photo(id_user, count_photo)
+                print('Скачали фото у пользователя с id ' + id_user)
