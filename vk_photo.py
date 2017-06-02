@@ -1,11 +1,9 @@
-import requests
-import json
-import os
+import requests, json, os, zipfile, datetime
 
-# token = '316109efc4cbdeb2997daf111c8fe14d520fc1763473c258a4e58c05959c9f21b6f35e26c3d662d4907a1'
-
+# Получаем токен из файла
 with open('data/token.txt') as token_object:
     token = token_object.readline()
+
 
 # Сохраняем ответ сервера ВК в файл photos_json
 def write_json (data):
@@ -42,6 +40,7 @@ def download_photo(id, count):
                              'count': count,
                              'rev': 0,
                              'access_token': token})
+
     write_json(r.json())
 
     photos = json.load(open('photos_json'))['response']
@@ -74,3 +73,17 @@ if operation_mode == '1':
                 os.mkdir('photo/' + id_user.rstrip())
                 download_photo(id_user, count_photo)
                 print('Скачали фото у пользователя с id ' + id_user)
+
+    print('Начинаем архивацию фотографий')
+    yourfolder = 'photo'
+    now_date = datetime.datetime.now()
+    path_archive = 'result/photo-' + str(now_date) + '.zip'
+    arch = zipfile.ZipFile(path_archive, 'w', zipfile.ZIP_DEFLATED)
+    for root, dirs, files in os.walk(yourfolder):
+        print
+        root + '/' + str(files)
+        for tarfile in files:
+            if tarfile != '':
+                arch.write(root + '/' + tarfile)
+    arch.close()
+    print('Архивация фотографий закончена. Путь к архиву - ' + path_archive)
