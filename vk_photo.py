@@ -1,5 +1,8 @@
 import requests, json, os, zipfile, datetime
 
+count_d_photo = 0
+now_date = datetime.datetime.now()
+
 # Получаем токен из файла
 with open('data/token.txt') as token_object:
     token = token_object.readline()
@@ -29,6 +32,11 @@ def save_photo(url, folder_name):
 
         for chunk in r.iter_content(4096):
             file.write(chunk)
+
+        global count_d_photo
+        global count_photo
+        count_d_photo += 1
+        print('[ ' + str(now_date) + ' ]' + ' Скачано ' + str(count_d_photo) + ' из ' + str(count_photo) + ' фотографий ')
 
 
 # Получаем фото пользователя с максимальным расширением
@@ -66,17 +74,22 @@ if operation_mode == '1':
     with open('data/id_user.txt') as file_object:
         id_users = file_object.readlines()
         for id_user in id_users:
+            print('[ ' + str(now_date) + ' ]' + ' Начинаем скачивать фото у пользователя с id ' + id_user)
             if os.path.exists('photo/' + id_user.rstrip()):
-                print('Фото пользователя с id ' + id_user.rstrip() + ' уже скачаны')
+                print('[ ' + str(now_date) + ' ]' + ' Фото пользователя с id '
+                              + id_user.rstrip() +
+                              ' уже скачаны')
                 continue
             else:
                 os.mkdir('photo/' + id_user.rstrip())
                 download_photo(id_user, count_photo)
-                print('Скачали фото у пользователя с id ' + id_user)
+                print('[ ' + str(now_date) + ' ]' + ' Скачали фото у пользователя с id ' + id_user)
+                count_d_photo = 0
 
-    print('Начинаем архивацию фотографий')
+# Начимнаем архивацию результатов парсинга
+    print()
+    print('[ ' + str(now_date) + ' ]' + ' Начинаем архивацию фотографий')
     yourfolder = 'photo'
-    now_date = datetime.datetime.now()
     path_archive = 'result/photo-' + str(now_date) + '.zip'
     arch = zipfile.ZipFile(path_archive, 'w', zipfile.ZIP_DEFLATED)
     for root, dirs, files in os.walk(yourfolder):
@@ -86,4 +99,4 @@ if operation_mode == '1':
             if tarfile != '':
                 arch.write(root + '/' + tarfile)
     arch.close()
-    print('Архивация фотографий закончена. Путь к архиву - ' + path_archive)
+    print('[ ' + str(now_date) + ' ]' + ' Архивация фотографий закончена. Путь к архиву - ' + path_archive)
